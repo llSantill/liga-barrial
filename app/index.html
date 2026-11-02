@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Liga Barrial · Panel del torneo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <aside class="lateral">
+    <div class="marca">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7l4 3-1.5 4.5h-5L8 10z" fill="currentColor"/></svg>
+      </div>
+      <div>
+        <strong>Liga Barrial</strong>
+        <span>Torneo eliminatorio</span>
+      </div>
+    </div>
+
+    <nav id="menu">
+      <p class="grupo">General</p>
+      <button data-vista="resumen" class="activo"><svg viewBox="0 0 24 24"><path d="M4 13h6V4H4zm0 7h6v-5H4zm10 0h6v-9h-6zm0-16v5h6V4z"/></svg>Resumen</button>
+      <p class="grupo">Gestión</p>
+      <button data-vista="equipos"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z"/></svg>Equipos</button>
+      <button data-vista="jugadores"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5z"/></svg>Jugadores</button>
+      <button data-vista="partidos"><svg viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2zm-2 8h14v10H5z"/></svg>Partidos</button>
+      <button data-vista="sedes"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>Sedes</button>
+      <button data-vista="arbitros"><svg viewBox="0 0 24 24"><path d="M6 2h12v4l-4 4v12h-4V10L6 6z"/></svg>Árbitros</button>
+      <p class="grupo">Análisis</p>
+      <button data-vista="consultas"><svg viewBox="0 0 24 24"><path d="M4 20h16v-2H4zm2-4h3V9H6zm5 0h3V4h-3zm5 0h3v-5h-3z"/></svg>Consultas</button>
+    </nav>
+
+    <div class="pie-lateral">
+      <span id="estado-api" class="estado"><i></i>Conectando…</span>
+    </div>
+  </aside>
+
+  <div class="principal">
+    <header class="barra">
+      <div>
+        <p class="migas">Liga Barrial / <span id="miga">Resumen</span></p>
+        <h1 id="titulo-vista">Resumen</h1>
+      </div>
+      <div id="acciones-barra"></div>
+    </header>
+    <main id="contenido"></main>
+  </div>
+
+  <!-- Ventana para crear / editar -->
+  <div id="modal" class="modal oculto" role="dialog" aria-modal="true">
+    <div class="modal-caja">
+      <div class="modal-cabecera">
+        <h3 id="modal-titulo"></h3>
+        <button class="cerrar" id="modal-cerrar" aria-label="Cerrar">×</button>
+      </div>
+      <form id="formulario" novalidate></form>
+    </div>
+  </div>
+
+  <!-- Avisos -->
+  <div id="aviso" class="aviso oculto" role="alert"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/crud.js"></script>
+  <script src="js/consultas.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

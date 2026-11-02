@@ -1,0 +1,132 @@
+:root {
+  --fondo: #f5f7fa; --tarjeta: #ffffff; --borde: #e4e8ee; --borde2: #eef1f5;
+  --texto: #111827; --suave: #5b6472; --tenue: #8a93a1;
+  --verde: #0f766e; --verde2: #115e59; --verde-claro: #e6f4f2;
+  --lateral: #0b1f1c; --lateral2: #12302b;
+  --rojo: #b42318; --rojo-claro: #fef3f2; --ambar: #b54708; --ambar-claro: #fffaeb; --azul: #175cd3; --azul-claro: #eff8ff;
+  --sombra: 0 1px 2px rgba(16, 24, 40, .05), 0 1px 3px rgba(16, 24, 40, .06);
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 14px/1.5 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--fondo); color: var(--texto); display: flex; min-height: 100vh; }
+svg { width: 18px; height: 18px; fill: currentColor; flex: none; }
+
+/* ---------- barra lateral ---------- */
+.lateral { width: 240px; flex: none; background: var(--lateral); color: #cfe0dc; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+.marca { display: flex; gap: 12px; align-items: center; padding: 22px 20px 18px; border-bottom: 1px solid rgba(255,255,255,.06); }
+.marca strong { display: block; color: #fff; font-size: 15px; }
+.marca span { font-size: 12px; color: #8fb3ab; }
+.logo { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #14b8a6, #0f766e); display: grid; place-items: center; color: #fff; }
+.logo svg { width: 22px; height: 22px; }
+#menu { padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; flex: 1; overflow: auto; }
+#menu .grupo { margin: 16px 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #6f948c; }
+#menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 12px; border: 0; border-radius: 8px; background: transparent; color: #cfe0dc; font: 500 14px Inter, system-ui, sans-serif; cursor: pointer; text-align: left; }
+#menu button:hover { background: var(--lateral2); color: #fff; }
+#menu button.activo { background: #134e46; color: #fff; }
+#menu button svg { opacity: .85; }
+.pie-lateral { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,.06); }
+.estado { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: #cfe0dc; }
+.estado i { width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; }
+.estado.on i { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.2); }
+.estado.off i { background: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.2); }
+
+/* ---------- área principal ---------- */
+.principal { flex: 1; min-width: 0; }
+.barra { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 24px 32px 18px; background: var(--tarjeta); border-bottom: 1px solid var(--borde); }
+.migas { margin: 0 0 2px; font-size: 12px; color: var(--tenue); }
+.barra h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
+main { padding: 24px 32px 60px; max-width: 1280px; }
+
+/* ---------- botones y formularios ---------- */
+button { font: 600 14px Inter, system-ui, sans-serif; border-radius: 8px; padding: 9px 16px; cursor: pointer; border: 1px solid transparent; background: var(--verde); color: #fff; box-shadow: var(--sombra); display: inline-flex; align-items: center; gap: 6px; }
+button:hover { background: var(--verde2); }
+button.secundario { background: #fff; color: #344054; border-color: #d0d5dd; }
+button.secundario:hover { background: #f9fafb; }
+button.peligro { background: #fff; color: var(--rojo); border-color: #fecdca; }
+button.peligro:hover { background: var(--rojo-claro); }
+button.chico { padding: 5px 10px; font-size: 13px; box-shadow: none; }
+input, select { font: 14px Inter, system-ui, sans-serif; padding: 9px 12px; border: 1px solid #d0d5dd; border-radius: 8px; background: #fff; color: var(--texto); box-shadow: var(--sombra); min-width: 0; }
+input:focus, select:focus { outline: none; border-color: #5eead4; box-shadow: 0 0 0 4px rgba(20,184,166,.15); }
+
+/* ---------- tarjetas ---------- */
+.tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; box-shadow: var(--sombra); margin-bottom: 20px; overflow: hidden; }
+.tarjeta-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--borde2); flex-wrap: wrap; }
+.tarjeta-cabecera h2 { margin: 0; font-size: 15px; font-weight: 600; }
+.tarjeta-cabecera p { margin: 2px 0 0; font-size: 13px; color: var(--suave); }
+.tarjeta-cuerpo { padding: 16px 20px; }
+.contador { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 99px; background: var(--verde-claro); color: var(--verde); font-size: 12px; font-weight: 600; }
+.filtros { display: flex; gap: 10px; align-items: center; color: var(--suave); font-size: 13px; }
+
+/* ---------- indicadores del resumen ---------- */
+.indicadores { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+.indicador { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 18px 20px; box-shadow: var(--sombra); }
+.indicador span { font-size: 13px; color: var(--suave); font-weight: 500; }
+.indicador b { display: block; font-size: 30px; font-weight: 700; margin-top: 4px; letter-spacing: -.02em; }
+.indicador small { color: var(--tenue); }
+
+/* ---------- tablas ---------- */
+.tabla-cont { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; padding: 11px 14px; background: #f9fafb; color: var(--suave); font-size: 12px; font-weight: 600; border-bottom: 1px solid var(--borde); white-space: nowrap; }
+td { padding: 12px 14px; border-bottom: 1px solid var(--borde2); vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: #fafbfc; }
+td.acciones { text-align: right; white-space: nowrap; }
+td.acciones button { margin-left: 6px; }
+td.id { color: var(--tenue); font-variant-numeric: tabular-nums; width: 60px; }
+td.num { font-variant-numeric: tabular-nums; font-weight: 600; }
+.persona { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #fff; flex: none; }
+.insignia { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+.insignia::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.insignia.verde { background: #ecfdf3; color: #067647; } .insignia.ambar { background: var(--ambar-claro); color: var(--ambar); }
+.insignia.rojo { background: var(--rojo-claro); color: var(--rojo); } .insignia.azul { background: var(--azul-claro); color: var(--azul); }
+.insignia.gris { background: #f2f4f7; color: #475467; }
+.tenue { color: var(--tenue); }
+
+/* ---------- estados vacíos y error ---------- */
+.estado-vacio { text-align: center; padding: 48px 20px; color: var(--suave); }
+.estado-vacio .icono { width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 50%; display: grid; place-items: center; background: #f2f4f7; color: var(--suave); }
+.estado-vacio.error .icono { background: var(--rojo-claro); color: var(--rojo); }
+.estado-vacio h3 { margin: 0 0 4px; color: var(--texto); font-size: 15px; }
+.estado-vacio p { margin: 0; }
+.estado-vacio code { background: #f2f4f7; padding: 2px 6px; border-radius: 6px; font-size: 13px; }
+.cargando { padding: 32px 20px; color: var(--tenue); text-align: center; }
+
+/* ---------- resultado de funciones del motor ---------- */
+.panel-motor { display: flex; gap: 14px; align-items: center; margin: 0 20px 16px; padding: 14px 16px; border: 1px solid #a6f4c5; background: #f6fef9; border-radius: 10px; }
+.panel-motor .barra-progreso { flex: 1; max-width: 260px; height: 8px; background: #d1fadf; border-radius: 99px; overflow: hidden; }
+.panel-motor .barra-progreso i { display: block; height: 100%; background: #12b76a; }
+.panel-motor small { color: var(--tenue); }
+
+/* ---------- ventana modal ---------- */
+.modal { position: fixed; inset: 0; background: rgba(16, 24, 40, .55); display: grid; place-items: center; z-index: 30; padding: 20px; }
+.modal-caja { background: #fff; border-radius: 14px; width: 100%; max-width: 560px; box-shadow: 0 20px 40px rgba(16,24,40,.2); max-height: 90vh; overflow: auto; }
+.modal-cabecera { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--borde2); }
+.modal-cabecera h3 { margin: 0; font-size: 17px; }
+.cerrar { background: transparent; color: var(--suave); box-shadow: none; font-size: 22px; padding: 0 6px; }
+.cerrar:hover { background: #f2f4f7; }
+#formulario { padding: 18px 22px 22px; }
+.campos { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+.campos label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; color: #344054; }
+.campos label.ancho { grid-column: 1 / -1; }
+.error-form { margin: 14px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--rojo-claro); color: var(--rojo); font-size: 13px; font-weight: 500; }
+.botones { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.nota { font-size: 12px; color: var(--tenue); margin: 12px 0 0; }
+
+/* ---------- avisos ---------- */
+.aviso { position: fixed; right: 24px; bottom: 24px; z-index: 40; max-width: 420px; padding: 14px 16px 14px 44px; border-radius: 10px; font-weight: 500; box-shadow: 0 12px 24px rgba(16,24,40,.15); background: #fff; border: 1px solid var(--borde); }
+.aviso::before { position: absolute; left: 14px; top: 13px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #fff; }
+.aviso.ok { border-color: #a6f4c5; } .aviso.ok::before { content: "✓"; background: #12b76a; }
+.aviso.error { border-color: #fecdca; color: var(--rojo); } .aviso.error::before { content: "!"; background: #f04438; }
+.oculto { display: none !important; }
+
+@media (max-width: 900px) {
+  body { flex-direction: column; }
+  .lateral { width: 100%; height: auto; position: static; }
+  #menu { flex-direction: row; flex-wrap: wrap; } #menu .grupo { display: none; } #menu button { width: auto; }
+  .indicadores { grid-template-columns: 1fr 1fr; } .campos { grid-template-columns: 1fr; }
+  main, .barra { padding-left: 16px; padding-right: 16px; }
+}
+.nowrap { white-space: nowrap; }
+.encuentro { display: flex; flex-direction: column; gap: 2px; white-space: nowrap; font-weight: 500; }
+.encuentro span + span::before { content: "vs  "; color: var(--tenue); font-weight: 400; }

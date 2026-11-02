@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "API (uvicorn - puerto 8000)",
+      "type": "shell",
+      "command": "venv\\Scripts\\python.exe -m uvicorn main:app --reload",
+      "options": { "cwd": "${workspaceFolder}/api", "shell": { "executable": "cmd.exe", "args": ["/d", "/c"] } },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "group": "liga", "panel": "dedicated", "reveal": "always" }
+    },
+    {
+      "label": "App (http.server - puerto 5500)",
+      "type": "shell",
+      "command": "..\\api\\venv\\Scripts\\python.exe -m http.server 5500",
+      "options": { "cwd": "${workspaceFolder}/app", "shell": { "executable": "cmd.exe", "args": ["/d", "/c"] } },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "group": "liga", "panel": "dedicated", "reveal": "always" }
+    },
+    {
+      "label": "Prender Liga Barrial",
+      "dependsOn": ["API (uvicorn - puerto 8000)", "App (http.server - puerto 5500)"],
+      "problemMatcher": [],
+      "runOptions": { "runOn": "folderOpen" }
+    }
+  ]
+}
