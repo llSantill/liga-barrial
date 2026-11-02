@@ -60,12 +60,13 @@ MENSAJES = {
 }
 
 
-def _error_409(e, por_defecto):
+def _error_409(e, por_defecto, sql=""):
     restriccion = e.diag.constraint_name
     if restriccion in LLAVES_FORANEAS:
         no_existe, tiene_relacionados = LLAVES_FORANEAS[restriccion]
-        # PostgreSQL dice "is still referenced" cuando se intenta borrar algo con dependientes
-        mensaje = tiene_relacionados if "still referenced" in (e.diag.message_detail or "") else no_existe
+        # Si la operación era un DELETE, el registro tiene dependientes; si no, el dato referido no existe
+        es_borrado = sql.lstrip().upper().startswith("DELETE")
+        mensaje = tiene_relacionados if es_borrado else no_existe
     else:
         mensaje = MENSAJES.get(restriccion, por_defecto)
     return HTTPException(status_code=409, detail={"mensaje": mensaje, "restriccion": restriccion})
@@ -89,7 +90,7 @@ def ejecutar(conexion, sql, parametros=(), modo="ninguno"):
         return resultado
     except errors.ForeignKeyViolation as e:
         conexion.rollback()
-        raise _error_409(e, "El dato hace referencia a un registro que no existe, o tiene registros relacionados.")
+        raise _error_409(e, "El dato hace referencia a un registro que no existe, o tiene registros relacionados.", sql)
     except errors.UniqueViolation as e:
         conexion.rollback()
         raise _error_409(e, "Ya existe un registro con esos datos.")
