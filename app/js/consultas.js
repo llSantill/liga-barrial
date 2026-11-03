@@ -1,7 +1,3 @@
-// =====================================================================
-//  Consultas de negocio (JOIN / GROUP BY) mostradas como tablas
-// =====================================================================
-
 const CONSULTAS = [
   {
     ruta: "/consultas/jugadores-activos-por-equipo",

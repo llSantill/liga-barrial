@@ -1,11 +1,5 @@
-// =====================================================================
-//  Pantalla genérica de CRUD: listado + ventana de crear/editar + borrar.
-//  Cada tabla (equipos, jugadores, ...) se describe en main.js.
-// =====================================================================
-
 const esc = (v) => String(v ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-// ---------- piezas visuales reutilizables ----------
 const COLORES = ["#0f766e", "#175cd3", "#b54708", "#7a5af8", "#c11574", "#027a48", "#b42318", "#344054"];
 function avatar(texto) {
   const t = String(texto || "?");
@@ -31,13 +25,12 @@ function estadoVacio(texto) {
 }
 
 async function opcionesDe(campo) {
-  // Listas desplegables: fijas o traídas de otra tabla (llaves foráneas)
+
   if (campo.opciones) return campo.opciones.map((o) => ({ valor: o, texto: o }));
   const filas = await api("GET", campo.desde);
   return filas.map((f) => ({ valor: f[campo.valorDe], texto: campo.textoDe(f) }));
 }
 
-// ---------- pantalla ----------
 async function pantallaCrud(cfg) {
   document.getElementById("acciones-barra").innerHTML = `<button id="btn-nuevo">+ Nuevo ${cfg.singular}</button>`;
   document.getElementById("btn-nuevo").addEventListener("click", () => abrirFormulario(cfg, null));
@@ -57,7 +50,7 @@ async function pantallaCrud(cfg) {
       const sel = document.getElementById("filtro");
       (await opcionesDe(cfg.filtro)).forEach((o) => sel.insertAdjacentHTML("beforeend", `<option value="${esc(o.valor)}">${esc(o.texto)}</option>`));
       sel.addEventListener("change", () => cargarListado(cfg));
-    } catch { /* si la API no responde, el listado muestra el error */ }
+    } catch {  }
   }
   await cargarListado(cfg);
 }
@@ -97,7 +90,6 @@ async function cargarListado(cfg) {
   }
 }
 
-// ---------- ventana modal ----------
 function abrirModal(titulo, html) {
   document.getElementById("modal-titulo").textContent = titulo;
   const form = document.getElementById("formulario");
@@ -166,7 +158,7 @@ async function guardar(cfg, id, form) {
     avisar(id ? `${cfg.Singular} actualizado correctamente.` : `${cfg.Singular} creado correctamente.`);
     await cargarListado(cfg);
   } catch (e) {
-    mostrarErrorForm(form, e.message);      // el error se muestra dentro de la ventana
+    mostrarErrorForm(form, e.message);
   }
 }
 

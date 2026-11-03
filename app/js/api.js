@@ -1,9 +1,3 @@
-// =====================================================================
-//  Comunicación con la API (la aplicación NUNCA habla directo con la base)
-//  y traducción de los errores a palabras del usuario.
-// =====================================================================
-
-// Nombres de los campos para los mensajes de error 422
 const NOMBRES_CAMPOS = {
   nombre: "Nombre", barrio: "Barrio", numero_camiseta: "Número de camiseta", telefono: "Teléfono",
   estado: "Estado", id_equipo: "Equipo", direccion: "Dirección", fecha: "Fecha", hora: "Hora",
@@ -11,7 +5,6 @@ const NOMBRES_CAMPOS = {
   id_partido_siguiente: "Partido siguiente", id_local: "Equipo local", id_visitante: "Equipo visitante",
 };
 
-// Explica en español cada error de validación que devuelve FastAPI (422)
 function explicarValidacion(error) {
   const campo = NOMBRES_CAMPOS[error.loc[error.loc.length - 1]] || error.loc[error.loc.length - 1];
   const tipos = {
@@ -34,13 +27,12 @@ function explicarValidacion(error) {
   return `El campo «${campo}» ${tipos[error.type] || "no es válido"}.`;
 }
 
-// Convierte cualquier respuesta de error en una frase para el usuario
 function mensajeDeError(status, cuerpo) {
   const detalle = cuerpo && cuerpo.detail;
   if (status === 422 && Array.isArray(detalle)) {
     return detalle.map(explicarValidacion).join(" ");
   }
-  if (detalle && detalle.mensaje) return detalle.mensaje;      // 404 y 409 ya traen el mensaje
+  if (detalle && detalle.mensaje) return detalle.mensaje;
   if (status === 404) return "No encontramos ese registro. Puede que ya lo hayan borrado.";
   if (status === 409) return "La base de datos rechazó la operación.";
   return "Ocurrió un error inesperado en el servidor. Intenta de nuevo.";
@@ -50,7 +42,6 @@ class ErrorApi extends Error {
   constructor(status, mensaje) { super(mensaje); this.status = status; }
 }
 
-// Llamada genérica a la API por HTTP
 async function api(metodo, ruta, cuerpo) {
   let respuesta;
   try {
@@ -67,7 +58,6 @@ async function api(metodo, ruta, cuerpo) {
   return datos;
 }
 
-// Avisos en pantalla
 function avisar(texto, tipo = "ok") {
   const caja = document.getElementById("aviso");
   caja.textContent = texto;

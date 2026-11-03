@@ -1,19 +1,3 @@
--- =====================================================================
---  Liga Barrial · Torneo eliminatorio
---  Script DDL completo: tablas, restricciones, índices, funciones,
---  triggers y vista. Listo para correr contra una base VACÍA.
---
---  Uso (psql):
---    CREATE DATABASE torneo_futbol;
---    \c torneo_futbol
---    \i db/ddl.sql
---    \i db/datos.sql
--- =====================================================================
-
--- ---------------------------------------------------------------------
--- 1. TABLAS
--- ---------------------------------------------------------------------
-
 CREATE TABLE equipos (
     id_equipo   SERIAL       PRIMARY KEY,
     nombre      VARCHAR(100) NOT NULL UNIQUE,
@@ -28,7 +12,7 @@ CREATE TABLE jugadores (
     estado          VARCHAR(20)  NOT NULL DEFAULT 'activo'
                     CHECK (estado IN ('activo', 'lesionado', 'suspendido')),
     id_equipo       INTEGER      NOT NULL REFERENCES equipos(id_equipo),
-    UNIQUE (id_equipo, numero_camiseta)          -- no se repite camiseta en un equipo
+    UNIQUE (id_equipo, numero_camiseta)
 );
 
 CREATE TABLE arbitro (
@@ -47,11 +31,11 @@ CREATE TABLE partido (
     id_partido           SERIAL      PRIMARY KEY,
     fecha                DATE        NOT NULL,
     hora                 TIME        NOT NULL,
-    resultado            VARCHAR(10),                     -- ej. '2-1'; NULL = sin jugar
+    resultado            VARCHAR(10),
     id_sede              INTEGER     NOT NULL REFERENCES sede(id_sede),
     id_arbitro           INTEGER              REFERENCES arbitro(id_arbitro),
-    fase                 VARCHAR(20),                     -- Cuartos, Semifinal, Final
-    id_partido_siguiente INTEGER              REFERENCES partido(id_partido)   -- relación recursiva
+    fase                 VARCHAR(20),
+    id_partido_siguiente INTEGER              REFERENCES partido(id_partido)
 );
 
 CREATE TABLE partido_equipo (
@@ -61,21 +45,12 @@ CREATE TABLE partido_equipo (
     PRIMARY KEY (id_partido, id_equipo)
 );
 
--- ---------------------------------------------------------------------
--- 2. ÍNDICES (para las llaves foráneas y las consultas de negocio)
--- ---------------------------------------------------------------------
-
 CREATE INDEX idx_jugadores_equipo      ON jugadores (id_equipo);
 CREATE INDEX idx_jugadores_estado      ON jugadores (estado);
 CREATE INDEX idx_partido_sede          ON partido (id_sede);
 CREATE INDEX idx_partido_arbitro_fecha ON partido (id_arbitro, fecha, hora);
 CREATE INDEX idx_partido_equipo_equipo ON partido_equipo (id_equipo);
 
--- ---------------------------------------------------------------------
--- 3. FUNCIONES (Trabajo de Unidad 4)
--- ---------------------------------------------------------------------
-
--- 3.1 Registra un partido validando que la sede y el árbitro existan
 CREATE OR REPLACE FUNCTION registrar_partido(
     IN  p_fecha       DATE,
     IN  p_hora        TIME,
@@ -107,7 +82,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 3.2 Vuelve a activar a los jugadores suspendidos de un equipo
 CREATE OR REPLACE FUNCTION rehabilitar_jugadores_equipo(
     IN  p_id_equipo INT,
     OUT p_total_rehabilitados INT
@@ -128,7 +102,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 3.3 Asigna local y visitante a un partido
 CREATE OR REPLACE FUNCTION asignar_equipos_partido(
     IN p_id_partido   INT,
     IN p_id_local     INT,
@@ -152,7 +125,6 @@ EXCEPTION
 END;
 $$ LANGUAGE plpgsql;
 
--- 3.4 Califica la plantilla de un equipo según el % de jugadores activos
 CREATE OR REPLACE FUNCTION obtener_estado_plantilla(
     IN  p_id_equipo INT,
     OUT p_total_jugadores INT,
@@ -181,11 +153,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- ---------------------------------------------------------------------
--- 4. TRIGGERS
--- ---------------------------------------------------------------------
-
--- 4.1 Un partido tiene máximo 2 equipos (local y visitante)
 CREATE OR REPLACE FUNCTION fn_trg_validar_max_equipos_partido()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -203,7 +170,6 @@ CREATE TRIGGER trg_validar_max_equipos_partido
 BEFORE INSERT ON partido_equipo
 FOR EACH ROW EXECUTE FUNCTION fn_trg_validar_max_equipos_partido();
 
--- 4.2 Camisetas válidas y aviso cuando un jugador vuelve a estar activo
 CREATE OR REPLACE FUNCTION fn_trg_validar_estado_jugador()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -221,7 +187,6 @@ CREATE TRIGGER trg_validar_estado_jugador
 BEFORE UPDATE ON jugadores
 FOR EACH ROW EXECUTE FUNCTION fn_trg_validar_estado_jugador();
 
--- 4.3 Un árbitro no puede tener dos partidos el mismo día a la misma hora
 CREATE OR REPLACE FUNCTION fn_trg_validar_disponibilidad_arbitro()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -245,10 +210,6 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trg_validar_disponibilidad_arbitro
 BEFORE INSERT OR UPDATE ON partido
 FOR EACH ROW EXECUTE FUNCTION fn_trg_validar_disponibilidad_arbitro();
-
--- ---------------------------------------------------------------------
--- 5. VISTA (Bono 2)
--- ---------------------------------------------------------------------
 
 CREATE OR REPLACE VIEW vista_resumen_equipos AS
 SELECT

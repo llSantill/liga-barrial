@@ -1,8 +1,4 @@
 @echo off
-REM ============================================================
-REM  Liga Barrial - arranca la API (puerto 8000) y la app (5500)
-REM  Doble clic en este archivo.
-REM ============================================================
 cd /d "%~dp0"
 
 set PY=

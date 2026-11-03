@@ -1,19 +1,3 @@
--- =====================================================================
---  Liga Barrial · Torneo eliminatorio
---  Script DDL completo: tablas, restricciones, índices, funciones,
---  triggers y vista. Listo para correr contra una base VACÍA.
---
---  Uso (psql):
---    CREATE DATABASE torneo_futbol;
---    \c torneo_futbol
---    \i db/ddl.sql
---    \i db/datos.sql
--- =====================================================================
-
--- ---------------------------------------------------------------------
--- 1. TABLAS
--- ---------------------------------------------------------------------
-
 CREATE TABLE equipos (
     id_equipo   SERIAL       PRIMARY KEY,
     nombre      VARCHAR(100) NOT NULL UNIQUE,
@@ -28,7 +12,7 @@ CREATE TABLE jugadores (
     estado          VARCHAR(20)  NOT NULL DEFAULT 'activo'
                     CHECK (estado IN ('activo', 'lesionado', 'suspendido')),
     id_equipo       INTEGER      NOT NULL REFERENCES equipos(id_equipo),
-    UNIQUE (id_equipo, numero_camiseta)          -- no se repite camiseta en un equipo
+    UNIQUE (id_equipo, numero_camiseta)
 );
 
 CREATE TABLE arbitro (
@@ -47,11 +31,11 @@ CREATE TABLE partido (
     id_partido           SERIAL      PRIMARY KEY,
     fecha                DATE        NOT NULL,
     hora                 TIME        NOT NULL,
-    resultado            VARCHAR(10),                     -- ej. '2-1'; NULL = sin jugar
+    resultado            VARCHAR(10),
     id_sede              INTEGER     NOT NULL REFERENCES sede(id_sede),
     id_arbitro           INTEGER              REFERENCES arbitro(id_arbitro),
-    fase                 VARCHAR(20),                     -- Cuartos, Semifinal, Final
-    id_partido_siguiente INTEGER              REFERENCES partido(id_partido)   -- relación recursiva
+    fase                 VARCHAR(20),
+    id_partido_siguiente INTEGER              REFERENCES partido(id_partido)
 );
 
 CREATE TABLE partido_equipo (
@@ -61,21 +45,12 @@ CREATE TABLE partido_equipo (
     PRIMARY KEY (id_partido, id_equipo)
 );
 
--- ---------------------------------------------------------------------
--- 2. ÍNDICES (para las llaves foráneas y las consultas de negocio)
--- ---------------------------------------------------------------------
-
 CREATE INDEX idx_jugadores_equipo      ON jugadores (id_equipo);
 CREATE INDEX idx_jugadores_estado      ON jugadores (estado);
 CREATE INDEX idx_partido_sede          ON partido (id_sede);
 CREATE INDEX idx_partido_arbitro_fecha ON partido (id_arbitro, fecha, hora);
 CREATE INDEX idx_partido_equipo_equipo ON partido_equipo (id_equipo);
 
--- ---------------------------------------------------------------------
--- 3. FUNCIONES (Trabajo de Unidad 4)
--- ---------------------------------------------------------------------
-
--- 3.1 Registra un partido validando que la sede y el árbitro existan
 CREATE OR REPLACE FUNCTION registrar_partido(
     IN  p_fecha       DATE,
     IN  p_hora        TIME,
@@ -107,7 +82,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 3.2 Vuelve a activar a los jugadores suspendidos de un equipo
 CREATE OR REPLACE FUNCTION rehabilitar_jugadores_equipo(
     IN  p_id_equipo INT,
     OUT p_total_rehabilitados INT
@@ -128,7 +102,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 3.3 Asigna local y visitante a un partido
 CREATE OR REPLACE FUNCTION asignar_equipos_partido(
     IN p_id_partido   INT,
     IN p_id_local     INT,
@@ -152,7 +125,6 @@ EXCEPTION
 END;
 $$ LANGUAGE plpgsql;
 
--- 3.4 Califica la plantilla de un equipo según el % de jugadores activos
 CREATE OR REPLACE FUNCTION obtener_estado_plantilla(
     IN  p_id_equipo INT,
     OUT p_total_jugadores INT,
@@ -181,11 +153,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- ---------------------------------------------------------------------
--- 4. TRIGGERS
--- ---------------------------------------------------------------------
-
--- 4.1 Un partido tiene máximo 2 equipos (local y visitante)
 CREATE OR REPLACE FUNCTION fn_trg_validar_max_equipos_partido()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -203,7 +170,6 @@ CREATE TRIGGER trg_validar_max_equipos_partido
 BEFORE INSERT ON partido_equipo
 FOR EACH ROW EXECUTE FUNCTION fn_trg_validar_max_equipos_partido();
 
--- 4.2 Camisetas válidas y aviso cuando un jugador vuelve a estar activo
 CREATE OR REPLACE FUNCTION fn_trg_validar_estado_jugador()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -221,7 +187,6 @@ CREATE TRIGGER trg_validar_estado_jugador
 BEFORE UPDATE ON jugadores
 FOR EACH ROW EXECUTE FUNCTION fn_trg_validar_estado_jugador();
 
--- 4.3 Un árbitro no puede tener dos partidos el mismo día a la misma hora
 CREATE OR REPLACE FUNCTION fn_trg_validar_disponibilidad_arbitro()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -246,10 +211,6 @@ CREATE TRIGGER trg_validar_disponibilidad_arbitro
 BEFORE INSERT OR UPDATE ON partido
 FOR EACH ROW EXECUTE FUNCTION fn_trg_validar_disponibilidad_arbitro();
 
--- ---------------------------------------------------------------------
--- 5. VISTA (Bono 2)
--- ---------------------------------------------------------------------
-
 CREATE OR REPLACE VIEW vista_resumen_equipos AS
 SELECT
     e.id_equipo,
@@ -263,14 +224,8 @@ SELECT
 FROM equipos e
 LEFT JOIN jugadores j ON j.id_equipo = e.id_equipo
 GROUP BY e.id_equipo, e.nombre, e.barrio;
--- =====================================================================
---  Liga Barrial · Datos de ejemplo del caso
---  Correr DESPUÉS de ddl.sql, sobre la base vacía.
--- =====================================================================
-
 BEGIN;
 
--- Equipos (8, para una llave completa de cuartos de final)
 INSERT INTO equipos (id_equipo, nombre, barrio) VALUES
   (1, 'Leones de Belén', 'Belén'),
   (2, 'Halcones de Robledo', 'Robledo'),
@@ -281,19 +236,16 @@ INSERT INTO equipos (id_equipo, nombre, barrio) VALUES
   (7, 'Lobos de Aranjuez', 'Aranjuez'),
   (8, 'Cóndores de La América', 'La América');
 
--- Sedes
 INSERT INTO sede (id_sede, nombre, direccion) VALUES
   (1, 'Unidad Deportiva de Belén', 'Cra 76 #22B-30, Belén'),
   (2, 'Polideportivo Sur', 'Cl 30A #80-15, Belén'),
   (3, 'Cancha Sintética Robledo', 'Cl 65 #88-20, Robledo');
 
--- Árbitros
 INSERT INTO arbitro (id_arbitro, nombre, telefono) VALUES
   (1, 'Carlos Restrepo', '3019998877'),
   (2, 'Luisa Gómez', '3104445566'),
   (3, 'Andrés Cardona', '3157771122');
 
--- Jugadores (25 por equipo)
 INSERT INTO jugadores (nombre, numero_camiseta, telefono, estado, id_equipo) VALUES
   ('Jorge Hincapié', 10, '3000007919', 'activo', 1),
   ('Mateo Ríos', 1, NULL, 'activo', 1),
@@ -496,8 +448,6 @@ INSERT INTO jugadores (nombre, numero_camiseta, telefono, estado, id_equipo) VAL
   ('Samuel Gaviria', 14, NULL, 'activo', 8),
   ('Steven Moreno', 1, '3001583800', 'activo', 8);
 
--- Partidos: la llave eliminatoria (relación recursiva id_partido_siguiente).
--- Se insertan de la final hacia atrás para que exista el partido siguiente.
 INSERT INTO partido (id_partido, fecha, hora, resultado, id_sede, id_arbitro, fase, id_partido_siguiente) VALUES
   (7, '2026-12-20', '15:00', NULL,  1, 1, 'Final',     NULL),
   (5, '2026-12-13', '10:00', NULL,  1, 1, 'Semifinal', 7),
@@ -507,14 +457,12 @@ INSERT INTO partido (id_partido, fecha, hora, resultado, id_sede, id_arbitro, fa
   (3, '2026-12-06', '14:00', NULL,  1, 1, 'Cuartos',   6),
   (4, '2026-12-06', '16:00', NULL,  3, 3, 'Cuartos',   6);
 
--- Equipos de cada partido de cuartos (las semifinales se asignan desde la aplicación)
 INSERT INTO partido_equipo (id_partido, id_equipo, rol) VALUES
   (1, 1, 'local'), (1, 2, 'visitante'),
   (2, 3, 'local'), (2, 4, 'visitante'),
   (3, 5, 'local'), (3, 6, 'visitante'),
   (4, 7, 'local'), (4, 8, 'visitante');
 
--- Ajustar las secuencias a los IDs ya usados
 SELECT setval('equipos_id_equipo_seq',   (SELECT MAX(id_equipo)  FROM equipos));
 SELECT setval('sede_id_sede_seq',         (SELECT MAX(id_sede)    FROM sede));
 SELECT setval('arbitro_id_arbitro_seq',   (SELECT MAX(id_arbitro) FROM arbitro));

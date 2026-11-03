@@ -1,7 +1,3 @@
-// =====================================================================
-//  Descripción de cada pantalla, acciones del motor y navegación
-// =====================================================================
-
 const EQUIPO_SELECT = { desde: "/equipos", valorDe: "id_equipo", textoDe: (e) => e.nombre };
 const fechaCorta = (f) => new Date(f + "T00:00:00").toLocaleDateString("es-CO", { day: "2-digit", month: "short" });
 
@@ -80,7 +76,6 @@ const PANTALLAS = {
   },
 };
 
-// ---------- Resumen (pantalla de inicio) ----------
 async function pantallaResumen() {
   document.getElementById("acciones-barra").innerHTML = "";
   const cont = document.getElementById("contenido");
@@ -118,7 +113,6 @@ async function pantallaResumen() {
   }
 }
 
-// ---------- Acciones que usan la lógica del motor (funciones y triggers) ----------
 async function verPlantilla(idEquipo, equipo) {
   try {
     const r = await api("GET", `/equipos/${idEquipo}/plantilla`);
@@ -167,7 +161,6 @@ async function asignarEquipos(idPartido) {
   } catch (e) { avisar(e.message, "error"); }
 }
 
-// ---------- Navegación ----------
 const TITULOS = { resumen: "Resumen", consultas: "Consultas de negocio" };
 
 function mostrar(vista) {
@@ -183,7 +176,6 @@ function mostrar(vista) {
 
 document.querySelectorAll("#menu button").forEach((b) => b.addEventListener("click", () => mostrar(b.dataset.vista)));
 
-// Indicador de conexión con la API
 function revisarApi() {
   const el = document.getElementById("estado-api");
   api("GET", "/")

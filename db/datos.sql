@@ -1,11 +1,5 @@
--- =====================================================================
---  Liga Barrial · Datos de ejemplo del caso
---  Correr DESPUÉS de ddl.sql, sobre la base vacía.
--- =====================================================================
-
 BEGIN;
 
--- Equipos (8, para una llave completa de cuartos de final)
 INSERT INTO equipos (id_equipo, nombre, barrio) VALUES
   (1, 'Leones de Belén', 'Belén'),
   (2, 'Halcones de Robledo', 'Robledo'),
@@ -16,19 +10,16 @@ INSERT INTO equipos (id_equipo, nombre, barrio) VALUES
   (7, 'Lobos de Aranjuez', 'Aranjuez'),
   (8, 'Cóndores de La América', 'La América');
 
--- Sedes
 INSERT INTO sede (id_sede, nombre, direccion) VALUES
   (1, 'Unidad Deportiva de Belén', 'Cra 76 #22B-30, Belén'),
   (2, 'Polideportivo Sur', 'Cl 30A #80-15, Belén'),
   (3, 'Cancha Sintética Robledo', 'Cl 65 #88-20, Robledo');
 
--- Árbitros
 INSERT INTO arbitro (id_arbitro, nombre, telefono) VALUES
   (1, 'Carlos Restrepo', '3019998877'),
   (2, 'Luisa Gómez', '3104445566'),
   (3, 'Andrés Cardona', '3157771122');
 
--- Jugadores (25 por equipo)
 INSERT INTO jugadores (nombre, numero_camiseta, telefono, estado, id_equipo) VALUES
   ('Jorge Hincapié', 10, '3000007919', 'activo', 1),
   ('Mateo Ríos', 1, NULL, 'activo', 1),
@@ -231,8 +222,6 @@ INSERT INTO jugadores (nombre, numero_camiseta, telefono, estado, id_equipo) VAL
   ('Samuel Gaviria', 14, NULL, 'activo', 8),
   ('Steven Moreno', 1, '3001583800', 'activo', 8);
 
--- Partidos: la llave eliminatoria (relación recursiva id_partido_siguiente).
--- Se insertan de la final hacia atrás para que exista el partido siguiente.
 INSERT INTO partido (id_partido, fecha, hora, resultado, id_sede, id_arbitro, fase, id_partido_siguiente) VALUES
   (7, '2026-12-20', '15:00', NULL,  1, 1, 'Final',     NULL),
   (5, '2026-12-13', '10:00', NULL,  1, 1, 'Semifinal', 7),
@@ -242,14 +231,12 @@ INSERT INTO partido (id_partido, fecha, hora, resultado, id_sede, id_arbitro, fa
   (3, '2026-12-06', '14:00', NULL,  1, 1, 'Cuartos',   6),
   (4, '2026-12-06', '16:00', NULL,  3, 3, 'Cuartos',   6);
 
--- Equipos de cada partido de cuartos (las semifinales se asignan desde la aplicación)
 INSERT INTO partido_equipo (id_partido, id_equipo, rol) VALUES
   (1, 1, 'local'), (1, 2, 'visitante'),
   (2, 3, 'local'), (2, 4, 'visitante'),
   (3, 5, 'local'), (3, 6, 'visitante'),
   (4, 7, 'local'), (4, 8, 'visitante');
 
--- Ajustar las secuencias a los IDs ya usados
 SELECT setval('equipos_id_equipo_seq',   (SELECT MAX(id_equipo)  FROM equipos));
 SELECT setval('sede_id_sede_seq',         (SELECT MAX(id_sede)    FROM sede));
 SELECT setval('arbitro_id_arbitro_seq',   (SELECT MAX(id_arbitro) FROM arbitro));

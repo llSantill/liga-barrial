@@ -1,8 +1,3 @@
-"""Conexión a PostgreSQL y manejo de errores de la base.
-
-Este es el ÚNICO archivo que habla con la base. Los datos de conexión
-salen del archivo .env (nunca se escriben en el código).
-"""
 import os
 
 import psycopg2
@@ -21,19 +16,13 @@ PARAMETROS = {
     "password": os.getenv("DB_PASSWORD", ""),
 }
 
-
 def get_conexion():
-    """Dependencia de FastAPI: abre una conexión por solicitud y la cierra al final."""
     conexion = psycopg2.connect(**PARAMETROS)
     try:
         yield conexion
     finally:
         conexion.close()
 
-
-# Mensajes en palabras del usuario para cada restricción de la base.
-# Las llaves foráneas tienen dos casos: el registro elegido no existe (al crear o editar)
-# o el registro tiene otros que dependen de él (al borrar).
 LLAVES_FORANEAS = {
     "jugadores_id_equipo_fkey":          ("El equipo elegido no existe.",
                                           "Ese equipo tiene jugadores registrados, no se puede borrar."),
@@ -59,25 +48,17 @@ MENSAJES = {
     "partido_equipo_rol_check": "El rol debe ser local o visitante.",
 }
 
-
 def _error_409(e, por_defecto, sql=""):
     restriccion = e.diag.constraint_name
     if restriccion in LLAVES_FORANEAS:
         no_existe, tiene_relacionados = LLAVES_FORANEAS[restriccion]
-        # Si la operación era un DELETE, el registro tiene dependientes; si no, el dato referido no existe
         es_borrado = sql.lstrip().upper().startswith("DELETE")
         mensaje = tiene_relacionados if es_borrado else no_existe
     else:
         mensaje = MENSAJES.get(restriccion, por_defecto)
     return HTTPException(status_code=409, detail={"mensaje": mensaje, "restriccion": restriccion})
 
-
 def ejecutar(conexion, sql, parametros=(), modo="ninguno"):
-    """Ejecuta SQL con parámetros (%s) y traduce los errores de la base a HTTP.
-
-    modo: "uno" -> devuelve una fila, "todos" -> lista de filas, "ninguno" -> nada.
-    Si la base rechaza la operación se hace conexion.rollback() y se responde 409.
-    """
     try:
         with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
             cursor.execute(sql, parametros)
@@ -98,13 +79,11 @@ def ejecutar(conexion, sql, parametros=(), modo="ninguno"):
         conexion.rollback()
         raise _error_409(e, "La base rechazó el dato porque no cumple una regla del torneo.")
     except errors.RaiseException as e:
-        # Errores lanzados por nuestras funciones y triggers (RAISE EXCEPTION)
         conexion.rollback()
         raise HTTPException(status_code=409, detail={"mensaje": e.diag.message_primary, "restriccion": "regla_del_motor"})
     except psycopg2.Error as e:
         conexion.rollback()
         raise HTTPException(status_code=500, detail={"mensaje": "Error inesperado en la base de datos.", "restriccion": None})
-
 
 def no_encontrado(que):
     return HTTPException(status_code=404, detail={"mensaje": f"No existe {que}.", "restriccion": None})
